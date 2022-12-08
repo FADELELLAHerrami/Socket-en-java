@@ -90,6 +90,34 @@ La méthode getOutputStream retourne un objet de type OutputStream , cet objet a
     L'objet printWriter prend deux paramétres , le duexiéme paramétre , est un booléan , si le paramétre est égale à true , alors le steam va envoyée la chîne de charactère au client , mais si false , le stream va stocker la chaîne de charactère dans un buffer , (le stream stocke les chînes de charactères par println()), et pour les envoyer , le stream utilise la méthode flush() . 
  `pw.println("chaîne de charactère que je voudrais envoyer")`  
  !["image"](/Octet%20N%C2%B01%20(1).png)
+ 
+ ---  
+ ---  
+ ---  
+ # R/E des objets (Sérialisation et désérialisation)  
+
+    Pour envoyer un objet dans un stream , il doit que sa classe implémente l'interface Serializable
+## Exemple : 
+---
+`public class Voiture implement Serializable {`  
+`String mat;int carburant;`
+`public Voiture(int m, String c){this.mat=m;this.carburant=c;} }`
+## Pour séarialiser un objet (envoyer un objet vers le client) :  
+`Socket s = new Socket(ipAddress,port);`  
+`OutputStream os = s.getOutputStream();`  
+`ObjectOutputStream oos = new ObjectOutputStream(os);`  
+`Voiture V1 = new Voiture(50,"M215");`  
+`oss.writeObject(V1);`   
+
+    La méthode writeObject() transforme l'objet en un tableau d'octet et l'envoie 
+## Pou désérialiser un objet (recevoir un objet depuis un server) :  
+`ServerSocket ss = new ServerSocket(port);`   
+`Socket s = ss.accept();`  
+`inputStream is = s.getinputStream();`   
+`objectinputStream ois = new objectinputStream(is);`  
+`Voiture v = (Voiture) ois.readObject();`
+
+    La méthode readObject() transforme le tableau d'octets envoyé par la méthode writeObject() en un objet de type Voiture
 
 
 
