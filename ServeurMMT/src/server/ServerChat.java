@@ -1,7 +1,5 @@
 package server;
 
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,27 +12,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerChat extends Thread {
-	// Attributs 
+	// Attributs
 	private int nbrClient;
-	// déclaration d'une liste des cilents 
+	// déclaration d'une liste des cilents
 	private List<Conversation> clients = new ArrayList<Conversation>();
-	
 
-	
 	// Main
-	
+
 	public static void main(String[] args) {
 		new ServerChat().start();
 	}
-	
-	
-	
-	
-	
+
 	// m2thode run de notre serveur
 	public void run() {
 		try {
-			ServerSocket ss = new ServerSocket(2222);
+			ServerSocket ss = new ServerSocket(2531);
 			System.out.println("Démmarage du serveur ......");
 			while (true) {
 				Socket s = ss.accept();
@@ -47,12 +39,8 @@ public class ServerChat extends Thread {
 			System.out.println("Error");
 		}
 	}
-	
-	
-	
-	
-	
-	// Classe conversation 
+
+	// Classe conversation
 	public class Conversation extends Thread {
 		protected Socket s;
 		protected int nbrClient;
@@ -61,11 +49,10 @@ public class ServerChat extends Thread {
 			this.s = s;
 			this.nbrClient = nbrClient;
 		}
-		
-		
-		// methode broadcast 
-		
-		public void broadcast(String msg,Socket s,int numClient) {
+
+		// methode broadcast
+
+		public void broadcast(String msg, Socket s,int numClient) {
 			for(Conversation client: clients) {
 				try {
 					if(client.s != s) {
@@ -79,7 +66,7 @@ public class ServerChat extends Thread {
 				}
 			}
 		}
-		
+
 		// run de classe Conversation
 
 		public void run() {
@@ -90,14 +77,15 @@ public class ServerChat extends Thread {
 				BufferedReader br = new BufferedReader(isr);
 
 				String ip = s.getRemoteSocketAddress().toString();
-				System.out.println("Le client numéro " + nbrClient + " connecte, son address ip est "+ip);
-				
-				
+				System.out.println("Le client numéro " + nbrClient + " connecte, son address ip est " + ip);
+
 				OutputStream os = s.getOutputStream();
 				PrintWriter pw = new PrintWriter(os, true);
-				pw.println("Bienvenu le client numéro"+ nbrClient);
+
 				while (true) {
 					String req = br.readLine();
+
+					
 					if(req.contains("=>")) {						
 						String[] reqParams = req.split("=>");
 						if(reqParams.length == 2) {
@@ -108,8 +96,10 @@ public class ServerChat extends Thread {
 					}else {
 						broadcast(req, s, -1);
 					}
+
 				}
-			} catch (IOException e) {	
+
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -117,36 +107,3 @@ public class ServerChat extends Thread {
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

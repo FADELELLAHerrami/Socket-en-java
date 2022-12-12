@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -27,6 +28,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class ClientChat extends Application {
+
+	PrintWriter pr;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -60,9 +63,22 @@ public class ClientChat extends Application {
 		box2.setPadding(new Insets(10));
 		// listView au centre de la page
 		ObservableList<String> listObservable = FXCollections.observableArrayList();
-		ListView<String> listView = new ListView(listObservable);
+		ListView<String> listView = new ListView<String>(listObservable);
 		borderpane.setCenter(box2);
 		box2.getChildren().add(listView);
+		// Pou envoyer un message
+		Label labelMessage = new Label("Message : ");
+		TextField textMessage = new TextField();
+		textMessage.setPrefSize(400, 35);
+		Button btnMsg = new Button("Envoyer");
+		// hbox 3
+		HBox box3 = new HBox();
+		box3.setSpacing(10);
+		box3.setPadding(new Insets(10));
+		box3.getChildren().addAll(labelMessage, textMessage, btnMsg);
+		//
+		borderpane.setBottom(box3);
+
 		//
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -74,28 +90,38 @@ public class ClientChat extends Application {
 			try {
 				Socket s = new Socket(host, port);
 				// data out
-				PrintWriter pr = new PrintWriter(s.getOutputStream(), true);
+				pr = new PrintWriter(s.getOutputStream(), true);
 				// data in
 				InputStream is = s.getInputStream();
 				InputStreamReader isr = new InputStreamReader(is);
 				BufferedReader br = new BufferedReader(isr);
 				new Thread(() -> {
-					try {
-						while (true) {
+					
+						
+					
+					while (true) {
+						try {
 							String response = br.readLine();
-							listObservable.add(response);
+							Platform.runLater(()->{
+								listObservable.add(response);
+							});
 						}
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}).start();
-				while (true) {
 
-				}
+						catch (IOException e) {
+							e.printStackTrace();
+						}
+
+					}
+					
+				}).start();
+
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		});
-
+		btnMsg.setOnAction((event) -> {
+			String message = textMessage.getText();
+			pr.println(message);
+		});
 	}
 }
